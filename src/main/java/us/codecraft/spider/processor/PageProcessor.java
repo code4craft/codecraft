@@ -1,6 +1,6 @@
 package us.codecraft.spider.processor;
 
-import us.codecraft.spider.processor.Page;
+import us.codecraft.spider.Site;
 
 /**
  * User: cairne
@@ -14,4 +14,6 @@ public interface PageProcessor {
      * @param page
      */
     public void process(Page page);
+
+    public Site getSite();
 }

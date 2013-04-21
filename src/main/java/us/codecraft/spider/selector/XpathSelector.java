@@ -20,14 +20,20 @@ public class XpathSelector implements Selector {
 
     @Override
     public String select(String text) {
-        TagNode tagNode = new HtmlCleaner().clean(text);
+        HtmlCleaner htmlCleaner = new HtmlCleaner();
+        TagNode tagNode = htmlCleaner.clean(text);
+        if (tagNode == null) {
+            return null;
+        }
         try {
             Object[] objects = tagNode.evaluateXPath(xpathStr);
-            if (objects[0] instanceof TagNode) {
-                TagNode tagNode1 = (TagNode) objects[0];
-                return tagNode1.getText().toString();
-            } else {
-                return objects[0].toString();
+            if (objects != null && objects.length >= 1) {
+                if (objects[0] instanceof TagNode) {
+                    TagNode tagNode1 = (TagNode) objects[0];
+                    return htmlCleaner.getInnerHtml(tagNode1);
+                } else {
+                    return objects[0].toString();
+                }
             }
         } catch (XPatherException e) {
             e.printStackTrace();
@@ -37,15 +43,23 @@ public class XpathSelector implements Selector {
 
     @Override
     public List<String> selectList(String text) {
-        TagNode tagNode = new HtmlCleaner().clean(text);
+        HtmlCleaner htmlCleaner = new HtmlCleaner();
+        TagNode tagNode = htmlCleaner.clean(text);
+        if (tagNode == null) {
+            return null;
+        }
         List<String> results = new ArrayList<String>();
         try {
             Object[] objects = tagNode.evaluateXPath(xpathStr);
-            if (objects[0] instanceof TagNode) {
-                TagNode tagNode1 = (TagNode) objects[0];
-                results.add(tagNode1.getText().toString());
-            } else {
-                results.add(objects[0].toString());
+            if (objects != null && objects.length >= 1) {
+                for (int i = 0; i < objects.length; i++) {
+                    if (objects[i] instanceof TagNode) {
+                        TagNode tagNode1 = (TagNode) objects[i];
+                        results.add(htmlCleaner.getInnerHtml(tagNode1));
+                    } else {
+                        results.add(objects[i].toString());
+                    }
+                }
             }
         } catch (XPatherException e) {
             e.printStackTrace();

@@ -1,5 +1,7 @@
 package us.codecraft.spider.selector;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -18,6 +20,12 @@ public class RegexSelector implements Selector {
     private Pattern regex;
 
     public RegexSelector(String regexStr) {
+        if (StringUtils.isBlank(regexStr)){
+            throw new IllegalArgumentException("regex must not be empty");
+        }
+        if (!StringUtils.contains(regexStr,"(")||!StringUtils.contains(regexStr,")")){
+            throw new IllegalArgumentException("regex must have capture group 1");
+        }
         this.regexStr = regexStr;
         try {
             regex = Pattern.compile(regexStr);

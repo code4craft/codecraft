@@ -2,6 +2,9 @@ package us.codecraft.spider;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import us.codecraft.spider.pipeline.ConsolePipeline;
+import us.codecraft.spider.samples.F58PageProcesser;
+import us.codecraft.spider.samples.OschinaPageProcesser;
 
 /**
  * User: cairne
@@ -10,9 +13,16 @@ import org.junit.Test;
  */
 public class SpiderTest {
 
+
+    @Test
+    public void testSpider(){
+         Spider.me().pipeline(new ConsolePipeline()).processor(new OschinaPageProcesser()).run();
+    }
+
+
     @Ignore
     @Test
-    public void test() {
+    public void languageSchema() {
 
         /**
          *

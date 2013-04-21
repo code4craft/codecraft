@@ -50,7 +50,9 @@ public class PlainText implements Selectable {
         List<String> results = new ArrayList<String>();
         for (String string : strings) {
             String result = selector.select(string);
-            results.add(result);
+            if (result!=null){
+                results.add(result);
+            }
         }
         return new PlainText(results);
     }

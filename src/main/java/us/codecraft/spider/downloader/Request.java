@@ -1,5 +1,7 @@
 package us.codecraft.spider.downloader;
 
+import us.codecraft.spider.Site;
+
 import java.util.List;
 
 /**
@@ -11,10 +13,13 @@ public class Request {
 
     private String url;
 
+    private Site site;
+
     private Object[] extra;
 
-    public Request(String url, Object... extra) {
+    public Request(String url,Site site, Object... extra) {
         this.url = url;
+        this.site = site;
         this.extra = extra;
     }
 
@@ -24,5 +29,9 @@ public class Request {
 
     public String getUrl() {
         return url;
+    }
+
+    public Site getSite() {
+        return site;
     }
 }
