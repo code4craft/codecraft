@@ -22,7 +22,7 @@ public class Site {
 
     private int sleepTime = 3000;
 
-    private static final Set<Integer> DEFAULT_STATUS_CODE_SET =   new HashSet<Integer>();
+    private static final Set<Integer> DEFAULT_STATUS_CODE_SET = new HashSet<Integer>();
 
     private Set<Integer> acceptStatCode = DEFAULT_STATUS_CODE_SET;
 
@@ -30,7 +30,7 @@ public class Site {
         DEFAULT_STATUS_CODE_SET.add(200);
     }
 
-    public static Site me(){
+    public static Site me() {
         return new Site();
     }
 

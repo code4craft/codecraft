@@ -40,6 +40,16 @@ public class PlainText implements Selectable {
     }
 
     @Override
+    public Selectable a() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Selectable as() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Selectable r(String regex) {
         RegexSelector regexSelector = SelectorFactory.getInstatnce().newRegexSelector(regex);
         return select(regexSelector, strings);

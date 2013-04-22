@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import us.codecraft.spider.processor.Page;
 import us.codecraft.spider.selector.Html;
 import us.codecraft.spider.selector.PlainText;
+import us.codecraft.spider.utils.UrlUtils;
 
 import java.io.IOException;
 
@@ -24,7 +25,7 @@ public class HttpClientDownloader implements Downloader {
 
     @Override
     public Page download(Request request) {
-        logger.info("downloading page "+request.getUrl());
+        logger.info("downloading page " + request.getUrl());
         HttpClient httpClient = HttpClientPool.getInstance().getClient(request.getSite());
         HttpGet httpGet = new HttpGet(request.getUrl());
         try {
@@ -34,10 +35,12 @@ public class HttpClientDownloader implements Downloader {
                 String content = IOUtils.toString(httpResponse.getEntity().getContent(),
                         request.getSite().getEncoding() == null ? request.getSite().getEncoding() : httpResponse.getEntity().getContentType().getValue());
                 Page page = new Page();
-                page.setHtml(new Html(content));
+                page.setHtml(new Html(UrlUtils.fixAllRelativeHrefs(content, request.getUrl())));
                 page.setUrl(new PlainText(request.getUrl()));
                 page.setRequest(request);
                 return page;
+            } else {
+                logger.warn("code error "+statusCode);
             }
         } catch (IOException e) {
             logger.warn("download page " + request.getUrl() + " error", e);

@@ -28,7 +28,7 @@ public class RegexSelector implements Selector {
         }
         this.regexStr = regexStr;
         try {
-            regex = Pattern.compile(regexStr);
+            regex = Pattern.compile(regexStr,Pattern.DOTALL|Pattern.CASE_INSENSITIVE);
         } catch (PatternSyntaxException e) {
             throw new IllegalArgumentException("invalid regex", e);
         }

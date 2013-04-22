@@ -55,6 +55,18 @@ public class Html extends PlainText {
     }
 
     @Override
+    public Selectable a() {
+        XpathSelector xpathSelector = SelectorFactory.getInstatnce().newXpathSelector("//a/@href");
+        return select(xpathSelector,strings);
+    }
+
+    @Override
+    public Selectable as() {
+        XpathSelector xpathSelector = SelectorFactory.getInstatnce().newXpathSelector("//a/@href");
+        return selectList(xpathSelector,strings);
+    }
+
+    @Override
     public Selectable xs(String xpath) {
         XpathSelector xpathSelector = SelectorFactory.getInstatnce().newXpathSelector(xpath);
         return selectList(xpathSelector, strings);

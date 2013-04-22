@@ -2,7 +2,9 @@ package us.codecraft.spider;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import us.codecraft.spider.pipeline.ConsolePipeline;
 import us.codecraft.spider.pipeline.FilePipeline;
+import us.codecraft.spider.processor.SimplePageProcessor;
 import us.codecraft.spider.samples.DianpingBlogProcessor;
 import us.codecraft.spider.samples.HuxiuProcessor;
 
@@ -18,6 +20,14 @@ public class SpiderTest {
     public void testSpider() throws InterruptedException {
         Spider me = Spider.me().pipeline(new FilePipeline()).processor(new HuxiuProcessor());
         me.run();
+    }
+
+    @Test
+    public void testGlobalSpider(){
+
+        Spider.me().pipeline(new FilePipeline()).
+                processor(new SimplePageProcessor("http://amcucn.iteye.com/","http://amcucn.iteye.com/blog/*")).run();
+
     }
 
 

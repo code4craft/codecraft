@@ -32,6 +32,17 @@ public interface Selectable {
      */
     public Selectable sc();
 
+    /**
+     * select a link from
+     *
+     * @return
+     */
+    public Selectable a();
+
+    public Selectable as();
+
+
+
 
     /**
      * select with regex

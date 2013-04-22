@@ -59,21 +59,28 @@ public class Spider implements Runnable {
         Request request = schedular.poll();
         while (request != null) {
             Page page = downloader.download(request);
-            if (page==null){
+            if (page == null) {
+                sleep(request.getSite().getSleepTime());
                 continue;
             }
             PageProcessor pageProcessor = pageProcessors.get(request.getSite());
-            if (pageProcessor==null){
-               logger.info("no processor for site "+request.getSite());
+            if (pageProcessor == null) {
+                logger.info("no processor for site " + request.getSite());
             }
             pageProcessor.process(page);
             addRequest(page);
             pipeline.process(page);
-            try {
-                Thread.sleep(request.getSite().getSleepTime());
-            } catch (InterruptedException e) {
-            }
+            sleep(request.getSite().getSleepTime());
             request = schedular.poll();
+        }
+    }
+
+    private void sleep(int time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            ;
         }
     }
 

@@ -60,4 +60,35 @@ public class UrlUtils {
         return host;
     }
 
+    private static Pattern patternForProtocal = Pattern.compile("[\\w]+://");
+
+    public static String removeProtocal(String url){
+        return patternForProtocal.matcher(url).replaceAll("");
+    }
+
+    public static String getDomain(String url) {
+        String domain = removeProtocal(url);
+        int i = StringUtils.indexOf(domain, "/", 1);
+        if (i > 0) {
+            domain = StringUtils.substring(domain, 0, i);
+        }
+        return domain;
+    }
+
+    private static Pattern patternForHref = Pattern.compile("(<a[^<>]*href=)[\"']{0,1}([^\"']*)[\"']{0,1}", Pattern.CASE_INSENSITIVE);
+
+    public static String fixAllRelativeHrefs(String html, String url) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Matcher matcher = patternForHref.matcher(html);
+        int lastEnd = 0;
+        while (matcher.find()) {
+            stringBuilder.append(StringUtils.substring(html, lastEnd, matcher.start()));
+            stringBuilder.append(matcher.group(1));
+            stringBuilder.append("\"" + fixRelativeUrl(matcher.group(2), url) + "\"");
+            lastEnd = matcher.end();
+        }
+        stringBuilder.append(StringUtils.substring(html, lastEnd));
+        return stringBuilder.toString();
+    }
+
 }

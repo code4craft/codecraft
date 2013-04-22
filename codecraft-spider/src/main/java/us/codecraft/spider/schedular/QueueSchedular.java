@@ -23,6 +23,7 @@ public class QueueSchedular implements Schedular {
 
     @Override
     public synchronized void push(Request request) {
+        logger.info("push to queue "+request.getUrl());
         if (urls.add(request.getUrl())){
             queue.add(request);
         }
