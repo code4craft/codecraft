@@ -26,7 +26,7 @@ public class SpiderTest {
     public void testGlobalSpider(){
 
         Spider.me().pipeline(new FilePipeline()).
-                processor(new SimplePageProcessor("http://amcucn.iteye.com/","http://amcucn.iteye.com/blog/*")).run();
+                processor(new SimplePageProcessor("http://my.oschina.net/chihz","http://my.oschina.net/chihz/blog/*")).run();
 
     }
 

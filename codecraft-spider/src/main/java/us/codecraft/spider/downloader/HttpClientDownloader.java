@@ -27,8 +27,8 @@ public class HttpClientDownloader implements Downloader {
     public Page download(Request request) {
         logger.info("downloading page " + request.getUrl());
         HttpClient httpClient = HttpClientPool.getInstance().getClient(request.getSite());
-        HttpGet httpGet = new HttpGet(request.getUrl());
         try {
+            HttpGet httpGet = new HttpGet(request.getUrl());
             HttpResponse httpResponse = httpClient.execute(httpGet);
             int statusCode = httpResponse.getStatusLine().getStatusCode();
             if (request.getSite().getAcceptStatCode().contains(statusCode)) {
@@ -42,7 +42,7 @@ public class HttpClientDownloader implements Downloader {
             } else {
                 logger.warn("code error "+statusCode);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.warn("download page " + request.getUrl() + " error", e);
         }
         return null;

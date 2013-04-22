@@ -33,9 +33,6 @@ public class SmartContentSelector implements Selector {
         allCount += nodes.length;
         Map<TagNode, AtomicInteger> countMap = new ConcurrentHashMap<TagNode, AtomicInteger>();
         count(nodes, countMap);
-        nodes = tagNode.getElementsByName("br", true);
-        allCount += nodes.length;
-        count(nodes, countMap);
         List<Map.Entry<TagNode, AtomicInteger>> sortList = new ArrayList<Map.Entry<TagNode, AtomicInteger>>();
         if (countMap.size() == 0) {
             return null;
@@ -52,11 +49,7 @@ public class SmartContentSelector implements Selector {
         });
         TagNode contentNode = sortList.get(0).getKey();
         int contentCount = countMap.get(contentNode).get();
-        if (contentCount * 1.0 / allCount > 0.3) {
-            return htmlCleaner.getInnerHtml(contentNode);
-        } else {
-            return  htmlCleaner.getInnerHtml(contentNode.getParent());
-        }
+        return htmlCleaner.getInnerHtml(contentNode);
     }
 
     private void incrCounter(TagNode node, Map<TagNode, AtomicInteger> countMap) {
