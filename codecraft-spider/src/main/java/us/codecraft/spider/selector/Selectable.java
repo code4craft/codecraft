@@ -33,15 +33,18 @@ public interface Selectable {
     public Selectable sc();
 
     /**
-     * select a link from
+     * select a link
      *
      * @return
      */
     public Selectable a();
 
+    /**
+     * select all links
+     *
+     * @return
+     */
     public Selectable as();
-
-
 
 
     /**

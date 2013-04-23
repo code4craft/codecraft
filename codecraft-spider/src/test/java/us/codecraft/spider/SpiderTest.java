@@ -32,6 +32,8 @@ public class SpiderTest {
         Spider.me().pipeline(new FilePipeline()).schedular(new FileCacheQueueSchedular(pageProcessor2.getSite(),"/data/temp/spider/cache/")).
                 processor(pageProcessor2).run();
 
+        Spider.me().processor(new SimplePageProcessor("http://my.oschina.net/", "http://my.oschina.net/*/blog/*")).run();
+
     }
 
     @Test
