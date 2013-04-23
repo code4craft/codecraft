@@ -25,9 +25,12 @@ public class SpiderTest {
 
     @Test
     public void testGlobalSpider(){
-        SimplePageProcessor pageProcessor = new SimplePageProcessor("http://pindao.blogbus.com/fengshang/2013042319729.html", "http://pindao.blogbus.com/*/*.html");
+        SimplePageProcessor pageProcessor = new SimplePageProcessor("http://2012guang.diandian.com/", "http://2012guang.diandian.com/post/*");
         Spider.me().pipeline(new FilePipeline()).schedular(new FileCacheQueueSchedular(pageProcessor.getSite(),"/data/temp/spider/cache/")).
-                processor(pageProcessor).run();
+                processor(pageProcessor).thread().start();
+        SimplePageProcessor pageProcessor2 = new SimplePageProcessor("http://lol.duowan.com/", "http://lol.duowan.com/*.html");
+        Spider.me().pipeline(new FilePipeline()).schedular(new FileCacheQueueSchedular(pageProcessor2.getSite(),"/data/temp/spider/cache/")).
+                processor(pageProcessor2).run();
 
     }
 

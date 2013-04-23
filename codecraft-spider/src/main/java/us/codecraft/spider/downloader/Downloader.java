@@ -1,6 +1,8 @@
 package us.codecraft.spider.downloader;
 
-import us.codecraft.spider.processor.Page;
+import us.codecraft.spider.Page;
+import us.codecraft.spider.Request;
+import us.codecraft.spider.Site;
 
 /**
  * User: cairne
@@ -9,5 +11,5 @@ import us.codecraft.spider.processor.Page;
  */
 public interface Downloader {
 
-    public Page download(Request request);
+    public Page download(Request request,Site site);
 }

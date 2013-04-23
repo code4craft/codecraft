@@ -1,6 +1,7 @@
 package us.codecraft.spider.schedular;
 
-import us.codecraft.spider.downloader.Request;
+import us.codecraft.spider.Request;
+import us.codecraft.spider.Site;
 
 /**
  * User: cairne
@@ -9,8 +10,8 @@ import us.codecraft.spider.downloader.Request;
  */
 public interface Schedular {
 
-    public void push(Request request);
+    public void push(Request request,Site site);
 
-    public Request poll();
+    public Request poll(Site site);
 
 }

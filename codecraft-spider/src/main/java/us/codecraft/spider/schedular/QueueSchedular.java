@@ -1,7 +1,8 @@
 package us.codecraft.spider.schedular;
 
 import org.apache.log4j.Logger;
-import us.codecraft.spider.downloader.Request;
+import us.codecraft.spider.Request;
+import us.codecraft.spider.Site;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,7 +23,7 @@ public class QueueSchedular implements Schedular {
     private Set<String> urls = new HashSet<String>();
 
     @Override
-    public synchronized void push(Request request) {
+    public synchronized void push(Request request,Site site) {
         if (logger.isDebugEnabled()){
             logger.debug("push to queue "+request.getUrl());
         }
@@ -33,7 +34,7 @@ public class QueueSchedular implements Schedular {
     }
 
     @Override
-    public synchronized Request poll() {
+    public synchronized Request poll(Site site) {
         return queue.poll();
     }
 }

@@ -1,4 +1,4 @@
-package us.codecraft.spider.downloader;
+package us.codecraft.spider;
 
 import us.codecraft.spider.Site;
 
@@ -13,13 +13,10 @@ public class Request {
 
     private String url;
 
-    private Site site;
-
     private Object[] extra;
 
-    public Request(String url,Site site, Object... extra) {
+    public Request(String url, Object... extra) {
         this.url = url;
-        this.site = site;
         this.extra = extra;
     }
 
@@ -31,7 +28,4 @@ public class Request {
         return url;
     }
 
-    public Site getSite() {
-        return site;
-    }
 }

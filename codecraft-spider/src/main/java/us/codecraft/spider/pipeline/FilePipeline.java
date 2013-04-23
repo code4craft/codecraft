@@ -1,10 +1,9 @@
 package us.codecraft.spider.pipeline;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import sun.security.provider.MD5;
-import us.codecraft.spider.processor.Page;
+import us.codecraft.spider.Page;
+import us.codecraft.spider.Site;
 import us.codecraft.spider.selector.Selectable;
 
 import java.io.File;
@@ -22,7 +21,7 @@ public class FilePipeline implements Pipeline {
 
     private String path = "/data/temp/spider/";
 
-    public FilePipeline() {
+    public FilePipeline(){
 
     }
 
@@ -31,11 +30,11 @@ public class FilePipeline implements Pipeline {
     }
 
     @Override
-    public void process(Page page) {
-        String domain = page.getRequest().getSite().getDomain();
+    public void process(Page page,Site site) {
+        String domain = site.getDomain();
         domain = StringUtils.removeStart(domain, "http://");
         domain = StringUtils.removeStart(domain, "https://");
-        domain = StringUtils.replace(domain,"/","");
+        domain = StringUtils.replace(domain, "/", "");
         String path = this.path + "" + domain + "/";
         File file = new File(path);
         if (!file.exists()) {

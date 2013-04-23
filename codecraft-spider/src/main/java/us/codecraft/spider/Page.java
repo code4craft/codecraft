@@ -1,7 +1,6 @@
-package us.codecraft.spider.processor;
+package us.codecraft.spider;
 
 import org.apache.commons.lang3.StringUtils;
-import us.codecraft.spider.downloader.Request;
 import us.codecraft.spider.selector.Selectable;
 import us.codecraft.spider.utils.UrlUtils;
 
@@ -61,7 +60,7 @@ public class Page {
                     break;
                 }
                 s = UrlUtils.fixRelativeUrl(s, url.toString());
-                targetRequests.add(new Request(s, request.getSite()));
+                targetRequests.add(new Request(s));
             }
         }
     }
@@ -72,7 +71,7 @@ public class Page {
         }
         synchronized (targetRequests) {
             requestString = UrlUtils.fixRelativeUrl(requestString, url.toString());
-            targetRequests.add(new Request(requestString, request.getSite()));
+            targetRequests.add(new Request(requestString));
         }
     }
 

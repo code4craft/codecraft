@@ -1,10 +1,8 @@
 package us.codecraft.spider.samples;
 
 import us.codecraft.spider.Site;
-import us.codecraft.spider.processor.Page;
+import us.codecraft.spider.Page;
 import us.codecraft.spider.processor.PageProcessor;
-
-import java.util.List;
 
 /**
  * User: cairne

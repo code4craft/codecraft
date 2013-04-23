@@ -3,7 +3,7 @@ package us.codecraft.spider.schedular;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import us.codecraft.spider.Site;
-import us.codecraft.spider.downloader.Request;
+import us.codecraft.spider.Request;
 
 import java.io.*;
 import java.util.LinkedHashSet;
@@ -14,8 +14,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * User: cairne
@@ -61,44 +59,65 @@ public class FileCacheQueueSchedular implements Schedular {
     }
 
     private void init() {
-        try {
-            queue = new LinkedBlockingQueue<Request>();
-            urls = new LinkedHashSet<String>();
-            BufferedReader fileCursorReader = new BufferedReader(new FileReader(filePath + site.getDomain() + fileCursor));
-            String line = null;
-            //read the last number
-            while ((line = fileCursorReader.readLine()) != null) {
-                cursor = new AtomicInteger(NumberUtils.toInt(line));
-            }
-            BufferedReader fileUrlReader = new BufferedReader(new FileReader(filePath + site.getDomain() + fileUrlAllName));
-            int lineReaded = 0;
-            while ((line = fileUrlReader.readLine()) != null) {
-                urls.add(line.trim());
-                lineReaded++;
-                if (lineReaded > cursor.get()) {
-                    queue.add(new Request(line, site));
-                }
-            }
-        } catch (IOException e) {
-        }
-        try {
-            fileUrlWriter = new PrintWriter(new FileWriter(filePath + site.getDomain() + fileUrlAllName, true));
-            fileCursorWriter = new PrintWriter(new FileWriter(filePath + site.getDomain() + fileCursor, false));
-        } catch (IOException e) {
-            throw new RuntimeException("init cache schedular error", e);
-        }
+        readFile();
+        initWriter();
+        initFlushThread();
+        inited.set(true);
+        logger.info("init cache schedular success");
+    }
+
+    private void initFlushThread() {
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 flush();
             }
         }, 10, 10, TimeUnit.SECONDS);
-        inited.set(true);
-        logger.info("init cache schedular success");
+    }
+
+    private void initWriter() {
+        try {
+            fileUrlWriter = new PrintWriter(new FileWriter(filePath + site.getDomain() + fileUrlAllName, true));
+            fileCursorWriter = new PrintWriter(new FileWriter(filePath + site.getDomain() + fileCursor, false));
+        } catch (IOException e) {
+            throw new RuntimeException("init cache schedular error", e);
+        }
+    }
+
+    private void readFile() {
+        try {
+            queue = new LinkedBlockingQueue<Request>();
+            urls = new LinkedHashSet<String>();
+            readCursorFile();
+            readUrlFile();
+        } catch (IOException e) {
+        }
+    }
+
+    private void readUrlFile() throws IOException {
+        String line;
+        BufferedReader fileUrlReader = new BufferedReader(new FileReader(filePath + site.getDomain() + fileUrlAllName));
+        int lineReaded = 0;
+        while ((line = fileUrlReader.readLine()) != null) {
+            urls.add(line.trim());
+            lineReaded++;
+            if (lineReaded > cursor.get()) {
+                queue.add(new Request(line, site));
+            }
+        }
+    }
+
+    private void readCursorFile() throws IOException {
+        BufferedReader fileCursorReader = new BufferedReader(new FileReader(filePath + site.getDomain() + fileCursor));
+        String line = null;
+        //read the last number
+        while ((line = fileCursorReader.readLine()) != null) {
+            cursor = new AtomicInteger(NumberUtils.toInt(line));
+        }
     }
 
     @Override
-    public synchronized void push(Request request) {
+    public synchronized void push(Request request,Site site) {
         if (!inited.get()) {
             init();
         }
@@ -113,7 +132,7 @@ public class FileCacheQueueSchedular implements Schedular {
     }
 
     @Override
-    public synchronized Request poll() {
+    public synchronized Request poll(Site site) {
         if (!inited.get()) {
             init();
         }

@@ -4,10 +4,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import us.codecraft.spider.downloader.Downloader;
 import us.codecraft.spider.downloader.HttpClientDownloader;
-import us.codecraft.spider.downloader.Request;
 import us.codecraft.spider.pipeline.ConsolePipeline;
 import us.codecraft.spider.pipeline.Pipeline;
-import us.codecraft.spider.processor.Page;
 import us.codecraft.spider.processor.PageProcessor;
 import us.codecraft.spider.schedular.QueueSchedular;
 import us.codecraft.spider.schedular.Schedular;
@@ -26,21 +24,24 @@ public class Spider implements Runnable {
 
     private Pipeline pipeline = new ConsolePipeline();
 
-    private Map<Site, PageProcessor> pageProcessors = new ConcurrentHashMap<Site, PageProcessor>();
+    private PageProcessor pageProcessor;
 
     private Schedular schedular = new QueueSchedular();
 
     private Logger logger = Logger.getLogger(getClass());
-
 
     public static Spider me() {
         return new Spider();
     }
 
     public Spider processor(PageProcessor pageProcessor) {
-        this.pageProcessors.put(pageProcessor.getSite(), pageProcessor);
-        schedular.push(new Request(pageProcessor.getSite().getStartUrl(), pageProcessor.getSite()));
+        this.pageProcessor = pageProcessor;
+        schedular.push(new Request(pageProcessor.getSite().getStartUrl()), pageProcessor.getSite());
         return this;
+    }
+
+    public Thread thread() {
+        return new Thread(this);
     }
 
     public Spider schedular(Schedular schedular) {
@@ -56,22 +57,19 @@ public class Spider implements Runnable {
 
     @Override
     public void run() {
-        Request request = schedular.poll();
+        Site site = pageProcessor.getSite();
+        Request request = schedular.poll(site);
         while (request != null) {
-            Page page = downloader.download(request);
+            Page page = downloader.download(request,site);
             if (page == null) {
-                sleep(request.getSite().getSleepTime());
+                sleep(site.getSleepTime());
                 continue;
-            }
-            PageProcessor pageProcessor = pageProcessors.get(request.getSite());
-            if (pageProcessor == null) {
-                logger.info("no processor for site " + request.getSite());
             }
             pageProcessor.process(page);
             addRequest(page);
-            pipeline.process(page);
-            sleep(request.getSite().getSleepTime());
-            request = schedular.poll();
+            pipeline.process(page,site);
+            sleep(site.getSleepTime());
+            request = schedular.poll(site);
         }
     }
 
@@ -87,7 +85,7 @@ public class Spider implements Runnable {
     private void addRequest(Page page) {
         if (CollectionUtils.isNotEmpty(page.getTargetRequests())) {
             for (Request request : page.getTargetRequests()) {
-                schedular.push(request);
+                schedular.push(request,pageProcessor.getSite());
             }
         }
     }

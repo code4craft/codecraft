@@ -1,6 +1,7 @@
 package us.codecraft.spider.pipeline;
 
-import us.codecraft.spider.processor.Page;
+import us.codecraft.spider.Page;
+import us.codecraft.spider.Site;
 
 /**
  * User: cairne
@@ -9,5 +10,5 @@ import us.codecraft.spider.processor.Page;
  */
 public interface Pipeline {
 
-    public void process(Page page);
+    public void process(Page page,Site site);
 }

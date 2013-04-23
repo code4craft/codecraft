@@ -1,5 +1,6 @@
 package us.codecraft.spider.processor;
 
+import us.codecraft.spider.Page;
 import us.codecraft.spider.Site;
 
 /**

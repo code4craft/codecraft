@@ -1,6 +1,7 @@
 package us.codecraft.spider.pipeline;
 
-import us.codecraft.spider.processor.Page;
+import us.codecraft.spider.Page;
+import us.codecraft.spider.Site;
 import us.codecraft.spider.selector.Selectable;
 
 import java.util.Map;
@@ -13,7 +14,7 @@ import java.util.Map;
 public class ConsolePipeline implements  Pipeline{
 
     @Override
-    public void process(Page page) {
+    public void process(Page page,Site site) {
         System.out.println("get page: "+page.getUrl());
         for (Map.Entry<String, Selectable> entry : page.getFields().entrySet()) {
             System.out.println(entry.getKey()+":\t"+entry.getValue().toStrings());
