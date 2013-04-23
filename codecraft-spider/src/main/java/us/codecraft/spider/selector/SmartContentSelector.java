@@ -1,11 +1,11 @@
 package us.codecraft.spider.selector;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import org.apache.log4j.Logger;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -28,50 +28,92 @@ public class SmartContentSelector implements Selector {
         if (tagNode == null) {
             return null;
         }
-        int allCount = 0;
         TagNode[] nodes = tagNode.getElementsByName("p", true);
-        allCount += nodes.length;
-        Map<TagNode, AtomicInteger> countMap = new ConcurrentHashMap<TagNode, AtomicInteger>();
-        count(nodes, countMap);
-        List<Map.Entry<TagNode, AtomicInteger>> sortList = new ArrayList<Map.Entry<TagNode, AtomicInteger>>();
-        if (countMap.size() == 0) {
+        TagNode[] divs = tagNode.getElementsByName("div", true);
+        TagNode[] leafDivs = new TagNode[divs.length];
+        int i = 0;
+        for (TagNode div : divs) {
+            if (div.getElementsByName("div", false).length == 0) {
+                leafDivs[i++] = div;
+            }
+        }
+        TagNode[] pres = tagNode.getElementsByName("pre", true);
+        Map<TagNode, AtomicDouble> pDensityCountMap = new HashMap<TagNode, AtomicDouble>();
+        countPdensity(nodes, pDensityCountMap);
+        countPdensity(leafDivs,pDensityCountMap);
+        countPdensity(pres, pDensityCountMap);
+        for (TagNode pre : pres) {
+            addCounter(pre, pDensityCountMap, 2);
+        }
+//        List allElementsList = tagNode.getAllElementsList(true);
+//        Map<TagNode, AtomicInteger> tagDensityCountMap = new HashMap<TagNode, AtomicInteger>();
+//        countTagdensity(allElementsList, tagDensityCountMap);
+        List<Map.Entry<TagNode, AtomicDouble>> sortList = new ArrayList<Map.Entry<TagNode, AtomicDouble>>();
+        if (pDensityCountMap.size() == 0) {
             return null;
         }
-        for (Map.Entry<TagNode, AtomicInteger> entry : countMap.entrySet()) {
+        for (Map.Entry<TagNode, AtomicDouble> entry : pDensityCountMap.entrySet()) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("p\t" + entry.getKey().getName() + "#" + entry.getKey().getAttributeByName("id") +
+                        "@" + entry.getKey().getAttributeByName("class") + ":" + entry.getValue().get());
+            }
             sortList.add(entry);
         }
 
-        Collections.sort(sortList, new Comparator<Map.Entry<TagNode, AtomicInteger>>() {
+        Collections.sort(sortList, new Comparator<Map.Entry<TagNode, AtomicDouble>>() {
             @Override
-            public int compare(Map.Entry<TagNode, AtomicInteger> o1, Map.Entry<TagNode, AtomicInteger> o2) {
-                return o2.getValue().get() - o1.getValue().get();
+            public int compare(Map.Entry<TagNode, AtomicDouble> o1, Map.Entry<TagNode, AtomicDouble> o2) {
+                Double d1 = o1.getValue().get();
+                Double d2 = o2.getValue().get();
+                return -d1.compareTo(d2);
             }
         });
         TagNode contentNode = sortList.get(0).getKey();
-        int contentCount = countMap.get(contentNode).get();
+        System.out.println(contentNode.getName() + "@" + contentNode.getAttributeByName("class"));
         return htmlCleaner.getInnerHtml(contentNode);
     }
 
-    private void incrCounter(TagNode node, Map<TagNode, AtomicInteger> countMap) {
-        AtomicInteger counter = countMap.get(node);
+    private void addCounter(TagNode node, Map<TagNode, AtomicDouble> countMap, double delta) {
+        AtomicDouble counter = countMap.get(node);
         if (counter == null) {
-            counter = new AtomicInteger(1);
+            counter = new AtomicDouble(delta);
             countMap.put(node, counter);
         } else {
-            counter.incrementAndGet();
+            counter.addAndGet(delta);
         }
     }
 
-    private void count(TagNode[] nodes, Map<TagNode, AtomicInteger> countMap) {
+    private static final double parentWeight = 0.7;
+
+    private void countPdensity(TagNode[] nodes, Map<TagNode, AtomicDouble> pDensityCountMap) {
         for (TagNode node : nodes) {
+            if (node==null){
+                continue;
+            }
             TagNode parent = node.getParent();
-            incrCounter(parent, countMap);
-            TagNode grandParent = parent.getParent();
-            if (grandParent != null) {
-                incrCounter(grandParent, countMap);
+            double pDensity = 1;
+            while (parent != null) {
+                addCounter(parent, pDensityCountMap, pDensity);
+                parent = parent.getParent();
+                pDensity = pDensity * parentWeight;
             }
         }
     }
+
+//    private void countTagdensity(List<Object> nodes, Map<TagNode, AtomicInteger> tagDensityCountMap) {
+//        for (Object node : nodes) {
+//            if (node instanceof TagNode) {
+//                TagNode tagNode = (TagNode) node;
+//                int count = tagNode.getChildTagList().size();
+//                addCounter(tagNode, tagDensityCountMap, count);
+//                TagNode parent = tagNode.getParent();
+//                while (parent != null) {
+//                    addCounter(parent, tagDensityCountMap, count);
+//                    parent = parent.getParent();
+//                }
+//            }
+//        }
+//    }
 
     private TagNode findLowestCommonParent(List<TagNode> tagNodes, int maxMargin, Map<TagNode, AtomicInteger> countMap) {
         TagNode contentNode = tagNodes.get(0);
