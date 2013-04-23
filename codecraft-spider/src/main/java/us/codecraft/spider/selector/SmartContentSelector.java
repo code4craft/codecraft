@@ -57,7 +57,10 @@ public class SmartContentSelector implements Selector {
             }
         });
         TagNode contentNode = sortList.get(0).getKey();
-        System.out.println(contentNode.getName() + "@" + contentNode.getAttributeByName("class"));
+        if (logger.isDebugEnabled()) {
+            logger.debug("p\t" + contentNode.getName() + "#" + contentNode.getAttributeByName("id") +
+                    "@" + contentNode.getAttributeByName("class"));
+        }
         return htmlCleaner.getInnerHtml(contentNode);
     }
 
@@ -75,7 +78,7 @@ public class SmartContentSelector implements Selector {
 
     private void countPdensity(TagNode[] nodes, Map<TagNode, AtomicDouble> pDensityCountMap) {
         for (TagNode node : nodes) {
-            if (node==null){
+            if (node == null) {
                 continue;
             }
             TagNode parent = node.getParent();

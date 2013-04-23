@@ -25,7 +25,7 @@ public class Page {
 
     private Selectable url;
 
-    private  List<Request> targetRequests=new ArrayList<Request>();
+    private List<Request> targetRequests = new ArrayList<Request>();
 
     public void process() {
         fields.put("title", html.x("").r(""));
@@ -57,7 +57,7 @@ public class Page {
     public void addTargetRequests(List<String> requests) {
         synchronized (targetRequests) {
             for (String s : requests) {
-                if (StringUtils.isBlank(s)||s.equals("#")){
+                if (StringUtils.isBlank(s) || s.equals("#") || s.startsWith("javascript:")) {
                     break;
                 }
                 s = UrlUtils.fixRelativeUrl(s, url.toString());
@@ -67,7 +67,7 @@ public class Page {
     }
 
     public void addTargetRequests(String requestString) {
-        if (StringUtils.isBlank(requestString)||requestString.equals("#")){
+        if (StringUtils.isBlank(requestString) || requestString.equals("#")) {
             return;
         }
         synchronized (targetRequests) {

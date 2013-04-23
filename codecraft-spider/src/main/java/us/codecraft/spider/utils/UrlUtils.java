@@ -18,7 +18,7 @@ public class UrlUtils {
         if (StringUtils.isBlank(url) || StringUtils.isBlank(refer)) {
             return url;
         }
-        if (url.startsWith("http") || url.startsWith("ftp") || url.startsWith("mailto")) {
+        if (url.startsWith("http") || url.startsWith("ftp") || url.startsWith("mailto") || url.startsWith("javascript:")) {
             return url;
         }
         if (StringUtils.startsWith(url, "/")) {
@@ -62,7 +62,7 @@ public class UrlUtils {
 
     private static Pattern patternForProtocal = Pattern.compile("[\\w]+://");
 
-    public static String removeProtocal(String url){
+    public static String removeProtocal(String url) {
         return patternForProtocal.matcher(url).replaceAll("");
     }
 
