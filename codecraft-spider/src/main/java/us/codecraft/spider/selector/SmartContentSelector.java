@@ -29,25 +29,13 @@ public class SmartContentSelector implements Selector {
             return null;
         }
         TagNode[] nodes = tagNode.getElementsByName("p", true);
-        TagNode[] divs = tagNode.getElementsByName("div", true);
-        TagNode[] leafDivs = new TagNode[divs.length];
-        int i = 0;
-        for (TagNode div : divs) {
-            if (div.getElementsByName("div", false).length == 0) {
-                leafDivs[i++] = div;
-            }
-        }
         TagNode[] pres = tagNode.getElementsByName("pre", true);
         Map<TagNode, AtomicDouble> pDensityCountMap = new HashMap<TagNode, AtomicDouble>();
         countPdensity(nodes, pDensityCountMap);
-        countPdensity(leafDivs,pDensityCountMap);
         countPdensity(pres, pDensityCountMap);
         for (TagNode pre : pres) {
             addCounter(pre, pDensityCountMap, 2);
         }
-//        List allElementsList = tagNode.getAllElementsList(true);
-//        Map<TagNode, AtomicInteger> tagDensityCountMap = new HashMap<TagNode, AtomicInteger>();
-//        countTagdensity(allElementsList, tagDensityCountMap);
         List<Map.Entry<TagNode, AtomicDouble>> sortList = new ArrayList<Map.Entry<TagNode, AtomicDouble>>();
         if (pDensityCountMap.size() == 0) {
             return null;
@@ -99,21 +87,6 @@ public class SmartContentSelector implements Selector {
             }
         }
     }
-
-//    private void countTagdensity(List<Object> nodes, Map<TagNode, AtomicInteger> tagDensityCountMap) {
-//        for (Object node : nodes) {
-//            if (node instanceof TagNode) {
-//                TagNode tagNode = (TagNode) node;
-//                int count = tagNode.getChildTagList().size();
-//                addCounter(tagNode, tagDensityCountMap, count);
-//                TagNode parent = tagNode.getParent();
-//                while (parent != null) {
-//                    addCounter(parent, tagDensityCountMap, count);
-//                    parent = parent.getParent();
-//                }
-//            }
-//        }
-//    }
 
     private TagNode findLowestCommonParent(List<TagNode> tagNodes, int maxMargin, Map<TagNode, AtomicInteger> countMap) {
         TagNode contentNode = tagNodes.get(0);
