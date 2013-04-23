@@ -7,6 +7,7 @@ import us.codecraft.spider.pipeline.FilePipeline;
 import us.codecraft.spider.processor.SimplePageProcessor;
 import us.codecraft.spider.samples.DianpingBlogProcessor;
 import us.codecraft.spider.samples.HuxiuProcessor;
+import us.codecraft.spider.schedular.FileCacheQueueSchedular;
 
 /**
  * User: cairne
@@ -24,10 +25,15 @@ public class SpiderTest {
 
     @Test
     public void testGlobalSpider(){
+        SimplePageProcessor pageProcessor = new SimplePageProcessor("http://pindao.blogbus.com/fengshang/2013042319729.html", "http://pindao.blogbus.com/*/*.html");
+        Spider.me().pipeline(new FilePipeline()).schedular(new FileCacheQueueSchedular(pageProcessor.getSite(),"/data/temp/spider/cache/")).
+                processor(pageProcessor).run();
 
-        Spider.me().pipeline(new FilePipeline()).
-                processor(new SimplePageProcessor("http://my.oschina.net/chihz","http://my.oschina.net/chihz/blog/*")).run();
+    }
 
+    @Test
+    public void test(){
+        System.out.println(System.getProperty("java.io.tmpdir"));
     }
 
 
